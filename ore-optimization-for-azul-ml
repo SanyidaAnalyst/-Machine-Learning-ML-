@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+
+#importing innitial sentimental analysis result from azure machine leaning 
+file_path = "C:/Users/USER/......./Manière De Voir Reviews _ Read Customer Service Reviews of www.manieredevoir.com.xlsx"
+
+sheet_name = 'Sheet1' 
+
+data = pd.read_excel(file_path, sheet_name=sheet_name)
+
+negative_threshold = 0.001
+neutral_threshold = 0.2
+positive_threshold = 0.5
+
+#Implementing the thresholds 
+conditions = [
+    (data['Score'] < negative_threshold),
+    (data['Score'] >= negative_threshold) & (data['Score'] <= neutral_threshold),
+    (data['Score'] > positive_threshold)
+]
+
+choices = ['Negative', 'Neutral', 'Positive']
+
+data['Sentiment_Category'] = np.select(conditions, choices, default='Unknown')
+
+data = data[data['Sentiment_Category'] != 'Unknown']
+#exporting modified results 
+data.to_excel('EditedSentiments.xlsx', index=False)
